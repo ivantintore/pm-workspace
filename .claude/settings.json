@@ -774,6 +774,19 @@
             "statusMessage": "Regenerando AGENTS.md..."
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ \"${SAVIA_CONDENSER_ENABLED:-}\" != \"true\" ] || bash \"$CLAUDE_PROJECT_DIR\"/scripts/context-condenser.sh --session-log \"${CLAUDE_PROJECT_DIR:-$(pwd)}/output/session-action-log.jsonl\" 2>/dev/null || true",
+            "async": true,
+            "timeout": 10,
+            "statusMessage": "SE-200: comprobando ventana de contexto...",
+            "_spec": "SE-200",
+            "_default": "off — opt-in via SAVIA_CONDENSER_ENABLED=true"
+          }
+        ]
       }
     ],
     "SessionEnd": [
@@ -816,9 +829,22 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"\"/.opencode/hooks/re-anchor-redlines.sh",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.opencode/hooks/re-anchor-redlines.sh",
             "timeout": 5,
             "statusMessage": "SPEC-193: re-anchor L1-L5 periodico..."
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -z \"${SAVIA_SKILL_TRIGGERS:-}\" ] || bash \"$CLAUDE_PROJECT_DIR\"/scripts/skill-keyword-detector.sh --json \"$(jq -r '.prompt // empty' 2>/dev/null)\" 2>/dev/null | grep -v '^\\[\\]$' >&2 || true",
+            "async": true,
+            "timeout": 5,
+            "statusMessage": "SE-203: detectando skill triggers...",
+            "_spec": "SE-203",
+            "_default": "off — opt-in via SAVIA_SKILL_TRIGGERS=true"
           }
         ]
       }
@@ -962,36 +988,6 @@
           }
         ]
       }
-    ],
-    "PostTurn": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/scripts/context-condenser.sh --session-log \"${CLAUDE_PROJECT_DIR:-$(pwd)}/output/session-action-log.jsonl\" 2>/dev/null &",
-            "async": true,
-            "timeout": 10,
-            "statusMessage": "SE-200: comprobando ventana de contexto...",
-            "_spec": "SE-200",
-            "_default": "off \u2014 opt-in via SAVIA_CONDENSER_ENABLED=true"
-          }
-        ]
-      }
-    ],
-    "PreTurn": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "[ -z \"${SAVIA_SKILL_TRIGGERS:-}\" ] || bash \"$CLAUDE_PROJECT_DIR\"/scripts/skill-keyword-detector.sh --json \"${CLAUDE_HUMAN_TURN_INPUT:-}\" 2>/dev/null | grep -v '^\\[\\]$' >&2 || true",
-            "async": true,
-            "timeout": 5,
-            "statusMessage": "SE-203: detectando skill triggers...",
-            "_spec": "SE-203",
-            "_default": "off \u2014 opt-in via SAVIA_SKILL_TRIGGERS=true"
-          }
-        ]
-      }
     ]
   },
   "_doc_se202_example": "SE-202 agent hook pattern \u2014 to enable: add to PreToolUse hooks: { \"type\": \"command\", \"command\": \"bash \\\"$CLAUDE_PROJECT_DIR\\\"/scripts/agent-hook-runner.sh --agent security-guardian --event \\\"{\\\"tool\\\":\\\"$TOOL_NAME\\\",\\\"tool_input\\\":\\\"$TOOL_INPUT\\\"}\\\"\", \"timeout\": 30 } \u2014 exit 0=allow, exit 2=deny. Ref: docs/rules/domain/agent-hook-protocol.md",
@@ -1005,5 +1001,8 @@
     "TASK_MAX_OUTPUT_LENGTH": "80000",
     "ENABLE_TOOL_SEARCH": "auto",
     "CLAUDE_CODE_NO_FLICKER": "1"
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true
   }
 }
