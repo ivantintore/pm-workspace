@@ -1,6 +1,6 @@
 # PM-Workspace — OpenCode / Claude Code
 
-> **Lazy context**: 5 @imports criticos se cargan en cada turno (critical-facts, savia, radical-honesty, autonomous-safety, caveman-default).
+> **Lazy context**: 7 @imports criticos se cargan en cada turno (critical-facts, savia, radical-honesty, autonomous-safety, caveman-default, active-user, auto-memory).
 > El resto se lee **bajo demanda** desde los paths documentados abajo.
 
 ## Anchor superior (SPEC-185)
@@ -18,6 +18,7 @@ Hechos invariantes del workspace, hard-cap 150 tokens. Auto-regenerado.
 @.claude/profiles/savia.md
 @docs/rules/domain/radical-honesty.md
 @docs/rules/domain/autonomous-safety.md
+@docs/rules/domain/caveman-default.md
 
 ## Usuario activo (SPEC-110)
 
@@ -70,6 +71,7 @@ Identidad del humano al volante + memoria auto persistida fuera del repo.
 | Knowledge Graph (entities + relations tipadas, SQLite) | `scripts/knowledge-graph.sh` + `docs/rules/domain/knowledge-graph.md` | Consultas de impacto, relaciones entre specs/rules/skills/proyectos, build del grafo (SE-162) |
 | Ubiquitous Language (glosario de dominio per-proyecto) | `scripts/extract-domain-entities.py` + `docs/rules/domain/ubiquitous-language.md` | Extraer términos de dominio, crear/actualizar CONTEXT.md per-proyecto, bridge a knowledge graph (SE-086) |
 | Automation Scheduler (tareas programadas, SE-304) | `scripts/savia-automations.sh` + `.claude/skills/automation-scheduler/SKILL.md` | Creas, gestionas o ejecutas automatizaciones programadas — morning briefs, weekly reports, PR checks, CVE scans |
+| Mapa AST del workspace (graphify) | `graphify-out/graph.json` + CLI `graphify query\|explain\|path` | Pregunta de arquitectura o dependencias sobre el código del workspace — consultar el grafo ANTES de grep |
 
 **Protocolo de carga**: usar `Read` directamente con el path exacto. NO uses `@import` aquí — romperías el lazy.
 

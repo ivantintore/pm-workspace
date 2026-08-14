@@ -38,6 +38,7 @@
 | "investigación técnica", "evaluar herramienta nueva" | skill:tech-research-agent | Doble opt-in SPEC-186 |
 | "noche autónoma", "overnight", "tareas mientras duermo" | skill:overnight-sprint | Doble opt-in SPEC-186 |
 | "auditar seguridad", "red team / blue team" | skill:adversarial-security | Doble opt-in SPEC-186 |
+| "cómo funciona X en el código", "arquitectura del repo", "qué llama a", "dependencias de un símbolo" | skill:graphify | Si el repo tiene `graphify-out/`, query directa (`graphify query\|explain\|path`); si no, `graphify extract <repo> --code-only` primero |
 | "Anthropic caído", "failover local", "LocalAI" | skill:emergency-mode | |
 
 ## AUTO — generado desde frontmatter
@@ -72,7 +73,7 @@
 | `code-improvement-loop` | skill:code-improvement-loop | Usar cuando se quiere ejecutar mejora autónoma de código en segundo plano con PRs par... |
 | `codebase-map` | skill:codebase-map | Usar cuando se necesita un mapa de dependencias del workspace (comandos→agentes→reg... |
 | `codegraph` | skill:codegraph | Usar cuando se necesita indexación AST persistente para navegación de callers/callees... |
-| `company-messaging` | skill:company-messaging | Usar cuando se envían mensajes internos cifrados entre miembros de la organización v�... |
+| `company-messaging` | skill:company-messaging | Usar cuando se envían mensajes internos cifrados entre miembros de la organización v�... |
 | `consensus-validation` | skill:consensus-validation | Usar cuando una decisión técnica o recomendación necesita validación por panel de j... |
 | `content-fingerprint` | skill:content-fingerprint | Usar cuando se necesita un identificador corto, deterministico y reproducible derivado ... |
 | `context-caching` | skill:context-caching | Usar cuando se optimiza el orden de carga de contexto para maximizar cache hits. |
