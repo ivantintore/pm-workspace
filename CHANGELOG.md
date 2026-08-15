@@ -594,6 +594,119 @@ outside the fork are included. Branch:
   per `data:` line; response audit entry includes content-type and
   unmask-applied flag.
 
+## [6.16.0] — 2026-08-15
+
+### Added
+
+- SE-276: Proactive skill suggestion engine (skill-suggest.sh) with silence mode, 500ms timeout, configurator integration
+- SE-277: Multi-target skill distribution CLI (savia-skills.sh) + skills-manifest.json (136 skills)
+- SE-278: Semantic skill quality pipeline with 8-dimension rubric, LLM judge, hash cache, batch evaluation
+- SE-279: Scheduled monitoring detector framework (always-on-runner.sh) with 5 detectors and cron installer
+- SE-280: SaviaVaults — Context Dome Server, MCP + A2A transports, git-backed storage, BM25 search, Ed25519 signing, 6-layer security sandbox
+- SE-281: SaviaVaults gap corrections — multi-vault config, A2A auth, rate limiting, search index persistence
+- SE-282: Savia Federate — cross-dome federation layer, registry, cache, A2A client, parallel search with merge/dedup/interleave
+- SE-283: Savia Federate security hardening — circuit breaker, audit logger, content hash verification, TLS support
+- SaviaVaults: 46 files, 90+ tests, 43 e2e passing, docs EN/ES
+- Skills doctor: health check for drift, broken symlinks, orphans, maturity breakdown
+- SE-285: SaviaVaults operational skill (savia-vaults) + knowledge architect agent (context-dome-manager, heavy/L2)
+- lightpanda-browser skill: headless browser for AI agents (33K stars, Zig, 9x faster than Chrome). Markdown dump, MCP server, agent mode, CDP compatible. External optional tool (AGPL-3.0, never bundled).
+- Proyecto unificado **savia-sonora** (`projects/savia-sonora/`): la interfaz hablada de Savia (voz y oido). Consolidacion Fase 0 (identidad) + Fase 1 (reubicacion) completadas:
+- Cross-platform (Linux/Windows/macOS): app Python/Pyloid; runtime `~/.savia/transcriptor/` mantenido (compatibilidad de datos).
+- Roadmap Era 202 y SKILLS.md actualizados.
+- SE-180: `.github/hooks/savia.json` generated from `.claude/settings.json` via `scripts/generate-github-hooks.sh` — hook support for GitHub Copilot CLI (>=1.0.60), which does not read `.claude/settings.json` directly (only `.github/hooks/*.json` from gitRoot). Single launcher `run-savia-hook.sh` (no env vars, no inline shell) and `wrap-for-copilot.sh` translates the Claude→Copilot output schema. Partial coverage: only the 9 event types documented in Copilot's hook schema have an equivalent (~83 of 110 hook entries translate; the rest are skipped for unmapped events, non-HTTPS webhook, or non-standard command formatting — see spec for the full breakdown). Structure and schema validated (bats 6/6) — live empirical validation against Copilot CLI itself confirmed for PreToolUse blocking only; SessionStart/agentStop still pending (see runbook).
+- SE-269: Forja de ideas socratica con veredicto ternario ENDURECIDA/MAS_CLARA/MUERTA (forge-idea.sh)
+- SE-269: Veredicto ternario PASA/RESERVAS/FALLA + gate pre-implementacion con 6 dimensiones (ternary-verdict.sh + implementation-readiness.sh)
+- SE-269: Paquete de revision humana en 5 secciones (review-checkpoint.sh)
+- SE-269: Calibracion adversarial de jueces con tracking FP/FN y anti-Goodhart (judge-calibration.sh)
+- SE-269: Distribucion de docs consumible por IA — llms.txt + llms-full.txt (llms-txt-generate.sh)
+- **SE-274 S2 — Golden sets de tribunales**: 3 datasets JSONL hand-labeled
+- **SE-316 — Eval-lint de golden sets**: `scripts/eval-lint.sh` valida que cada
+- **Tests**: `tests/test-eval-lint.bats` (20 casos: AC-S1, AC-S2, cobertura,
+- SE-289 S1-S3: Transparencia Art. 50 EU AI Act — inventario de 15 tipos de salida, notificacion de interaccion con IA en CLI/MCP/A2A, marcado Ed25519 de artefactos generados, deteccion 3 niveles (HIGH/MEDIUM/NONE)
+- SE-290 S1-S2: Savia Vaults-native — declaracion de vaults (config/vaults.yaml) con 5 vaults, mapeo de campos a 7 tipos de entidad, validacion progresiva contra SchemaRegistry, cupulas introspectables via vault_introspect y control de frescura
+- SE-291 S1: Savia Labs — cupula de investigacion epistemica con preregistro obligatorio, 4 tipos de entidad (hypothesis/experiment/result/protocol), cuaderno append-only y L1 preregistrada
+- SE-291 S3: Gestion de domos — CLI dome create/list/info/delete/set-default, DomeRegistry persistente (JSON), soporte multi-dome en MCP server
+- SE-291 S6: Control de acceso — UserStore con tokens bcrypt, AccessController RBAC (reader/writer/admin) por dome, autenticacion via SAVIA_AUTH_TOKEN, comandos CLI user create/delete/list/token/grant/revoke/permissions
+- SE-291 S7: Confidencialidad — N1-N4 gates en AccessController, N1 lectura publica, N3-N4 requieren roles elevados, comando CLI confidentiality set/get/audit
+- SE-291 fix: opencode.json bootstrapping corregido (ficheros locales inexistentes eliminados, MCP codebase-memory desactivado, parametro schema eliminado del arranque vaults), servidor MCP arranca sin dome configurado
+- SE-292: Contencion de ejecucion (7 slices, 6/7 completos — clasificacion, entorno, credenciales, cliente parcial, reversibilidad, fiabilidad, fail-closed)
+- SE-293: Auditoria de accesos + quotas por usuario (5/5 slices, 169 tests)
+- SE-294: Multi-provider proxy + shared contracts. ProviderRouter with health check and failover (DeepSeek, Anthropic). Contracts package with shared TypeScript types.
+- SE-296: Tabular intelligence — statistical profiling for structured data. Auto-detects column types, outliers, correlations. Pre-LLM hook replaces raw data with stats. 4-layer enforcement.
+- SE-297: Sovereign KG extraction — deterministic regex (12 patterns) + LLM-enhanced via ProviderRouter, hybrid pipeline with quality gate and anti-hallucination checks
+- SE-298: WikiLink enhancement — validation, backlinks in vault_read, vault_wikilink_health MCP tool. Obsidian-compatible [[wikilinks]] with broken link detection.
+- SE-301 agent security graph spec: static analysis of attack paths across 83 agents (35 rules, NetworkX, scores 0-10).
+- SE-302 Azure cost monitor spec: idle resource detection, monthly dashboard via Cost Management API.
+- SE-303 intent dispatch refactor spec: deterministic micro-kernel dispatch via YAML catalog (<50ms without LLM).
+- SE-304 automation scheduler: unified scheduled task infrastructure. Task store (JSON), async scheduler loop (catch-up, skip-on-overlap), scoped approvals, CLI `savia-automations.sh` with 10 commands, 6 default tasks (morning-brief, pr-stale-check, drift-daily, memory-consolidation, weekly-report, dependency-cve-scan). 46 tests. Supersedes SE-279 and overnight-sprint.
+- SE-306 agent runtime security spec: L1-L4 tool-call interception to block the Lethal Trifecta (privileged data + injection + exfiltration). Multi-agent delegation graph with cryptographic signing. Complements SE-301 (static agent security graph analysis).
+- SE-307 OKF adapter: SaviaVaults ahora importa/exporta bundles Open Knowledge Format v0.1. 4 modulos (okf, okf-conformance, okf-export, okf-import) + 3 comandos CLI (okf-conformance, okf-export, okf-import). 33 tests.
+- SE-308 Savia Transcriptor: app de escritorio que captura reuniones automaticamente. Fork de VoiceFlow + VAD auto-trigger (silero-vad), screenshots periodicos (mss), transcripcion local (faster-whisper). Integracion con Savia via skill transcriptor-digest + comando /transcriptor.
+- Nueva spec SE-310 en el roadmap (Era 202): bucle de voz push-to-talk en la aplicacion de escritorio Savia Transcriptor. Transcripcion local, respuesta LLM en streaming con el system prompt de Savia, sintesis de voz pluggable con degradacion, persistencia del transcripto por mensaje y digest posterior. Implementacion pendiente de aprobacion.
+- Spec SE-311 — SDLC Context Loop: cierra los dos gaps del SDD asistido por IA (articulo de Ernesto Laura Mamani, 2026-08-04): (1) memoria de contexto — post-merge alimenta las cupulas de SaviaVaults (spec→IMPLEMENTED, ADR, release) para que la documentacion viva; (2) enforcement determinista — compuerta consolidada que valida el diff FINAL contra los estandares de la organizacion (incluye ediciones manuales post-agente). Reutiliza SaviaVaults A2A /share + gates existentes.
+- **SE-313 S7 — Dispatch de subagentes con tiers corregido**: `~/.savia/preferences.yaml`
+- **Telemetría de dispatch**: nuevo `scripts/otel-emit.sh` (schema `savia.event/1.0`,
+- **Specs**: `SE-313` (observabilidad/trazabilidad OTel GenAI + EU AI Act, 8 slices)
+- **Tests**: `tests/test-otel-emit.bats`, `tests/test-subagent-dispatch-gate.bats`,
+- **SE-313 S1/S2/S3/S4/S5 (telemetría estándar)**: `config/telemetry-schema.json`
+- **SE-313 S6 / SE-275 S1+S3 (audit trail)**: `scripts/audit-chain-append.sh`
+- **SE-314 (clasificador determinista)**: `scripts/sovereignty-classify.sh`
+- **Tests nuevos**: `tests/test-savia-trace.bats`, `tests/test-telemetry-tail-sample.bats`,
+- SE-315 Scope Creep Gate — detección de diffs fuera del alcance de la spec:
+- **9 specs nuevas (PROPOSED)** tras análisis de repos externos:
+- **Roadmap**: Era 203 "External Repo Intelligence" añadida con las 9 specs
+- SE-317 Memoria reflexiva — pase de reflexión sobre el knowledge store:
+- Determinista (stdlib python), sin LLM: fingerprint + difflib + marcado. El
+- `link` usa cita de hash/título (heurística conservadora) para evitar falsos
+- SE-318 Blast-radius pre-commit — consulta de impacto antes de escribir:
+- La heurística grep filtra definiciones/imports/comentarios para evitar
+- El hook y el job son opt-in/report-only por diseño (SE-318 S3): el
+- SE-323 Incident RCA Agent — investigación autónoma de incidentes con
+- La suite sintética usa `rca-cases.jsonl` (no `cases.jsonl`) para no chocar
+- El harness reutiliza las capas de detección deterministas de SE-314
+- `--postmortem` respeta la política `output/postmortems/` (gitignored, N4b);
+- SE-324 Tabular Intelligence — Excel + deteccion relacional:
+- SE-325 Vault adjacency inline + relaciones tipadas — aprendizajes de Azure
+- Los aprendizajes de Cosmos aplicados son de **modelo de datos** (adyacencia
+- El índice relacional de `knowledge-graph.py` sigue siendo la fuente de
+
+### Changed
+
+- `docs/propuestas/SE-274-agent-quality-framework.md`: AC-S2.1..S2.3 completados.
+- `docs/propuestas/SE-316-eval-lint-golden-sets.md`: status PROPOSED → IMPLEMENTED.
+- `.gitignore`: `savia-vaults.quotas.json` (runtime state del MCP, regenerable).
+- MCP Server v0.2.0 a v0.3.0 con multi-dome, auth, y vault_domes tool
+- CLI ampliado con 3 nuevos grupos de comandos (user/dome/confidentiality)
+- SE-299 optimized model tiers for extraction agents: archive-digest mid→fast, pptx-digest heavy→mid, visual-digest heavy→mid, word-digest heavy→mid. ~60% inference cost reduction for extraction workloads. No logic changes, only model tier metadata.
+- SE-305 dynamic BATS test selection: CI now runs only tests affected by changed files instead of the full 666-test suite. Dependency map generator (`ci-bats-deps.sh`), test selector (`ci-select-bats.sh`), manual dir rules. 15 core tests always run, 30% threshold falls back to full suite. PR BATS time reduced from ~5min to <60s.
+- **Savia Sonora frontend**: rebrand completo VoiceFlow → Savia Sonora (index.html, Sidebar, Dashboard, Onboarding, Settings, Popup, meetings). Estética alineada con Savia Web: paleta púrpura `#6B4C9A`, glassmorphism, radios 10/16/24px, sombras en capas, tipografía Inter única y `theme-color` dinámico.
+- **i18n**: nuevo diccionario es/en (`src/lib/i18n.ts`) aplicado a las vistas principales; idioma por defecto español.
+- **Dedup**: HomePage y HistoryPage ahora comparten el hook `useHistoryEntries` y el componente `AudioPlayerDialog` (~500 líneas de duplicado eliminadas).
+- **Tests**: se añade vitest + jsdom + testing-library (27 tests frontend) y el script `test:frontend`.
+- **a11y**: focus-visible global, aria-live en carga/error, aria-label en icon-buttons y retry sin recargar la página.
+
+### Fixed
+
+- Auto-label PRs cross-repo (fork): el job `label` fallaba con `SyntaxError` en PRs desde forks y el token del workflow no siempre podia escribir labels en PRs cuyo head vive en otro repo. Ahora el script ignora el error de 403 cross-repo (labels son cosmeticos) y el flujo ya no aborta. Tambien corrige la llave de cierre del bloque `if` que rompia el parseo del script.
+- Corrected YAML frontmatter in tabular-analyst agent: `permission` → `permission_level`, `tools` from string list to object. Fixes OpenCode v1.14+ configuration validation error.
+- Resueltos los conflict markers heredados en config/vaults.yaml (ambos lados tenian contenido identico). Desbloquea el PII & Confidentiality Scan que fallaba en todos los PRs.
+- SE-300: pr-plan now updates existing PR bodies instead of leaving stale template. Detects open PR for branch via gh pr list, updates via gh pr edit.
+- SE-305: corregidos nombres de tests se253 en el selector dinámico de BATS. Las reglas y core_tests referenciaban `test-se-253-*` (con guion) pero los archivos reales son `test-se253-*`. El selector generaba tests inexistentes → CI fallaba con "Test file does not exist" en PRs que tocan agentes/skills.
+- confidentiality-scan.sh: excluye decoradores `@server.` (falso positivo de email en server.py del fork).
+- **Bug de comparación float en el clasificador**: `[[ "$LLM_CONF" -ge 0.70 ]]`
+- **Bug de `--` en la función `detect`**: `detect "private_key" -- 'patrón'`
+- **Corpus-run**: fragmentos de secretos construidos en runtime (nunca
+- `isShieldScript` (sovereignty-patterns.ts) y whitelist del gate bash ahora
+- **Guard de dispatch silencioso**: `dispatch-trace.ts` y `subagent-audience-filter.ts`
+- Corregido el número de gate: la propuesta original usaba "G16", ya ocupado
+- Pendiente de calibración (AC-S3.3 telemetría `scope.verdict`, AC-S3.4 5 PRs
+- `scripts/blast-radius.sh` concilia dos interfaces: la file-based de SE-260
+- `docs/hooks-coverage-matrix.md` regenerado (SE-253) para incluir
+- SE-324 correccion documental: `DOMAIN.md` ahora cita los tres modelos del
+- `skill-catalog-audit.sh`: parsea YAML plegado (`description: >` multilinea) — antes marcaba `bus-factor-analysis` y `context-dome` como `description-too-short` (FAIL) y rompia la suite BATS FULL en cualquier PR.
+- Contadores en sync: `CLAUDE.md` (commands 566→567, skills 124→125), `docs/rules/domain/pm-workflow.md` y `docs/RESOLVER.md` — el drift rompia `claude-md-drift-check` y `readiness-check` (y el readiness stamp).
+
+
 ## [6.15.0] — 2026-07-08
 
 ### Added
@@ -12913,6 +13026,7 @@ Initial public release of PM-Workspace.
 
 - **Documentation** with methodology
 
+[6.16.0]: https://github.com/gonzalezpazmonica/pm-workspace/compare/v6.15.0...v6.16.0
 [6.15.0]: https://github.com/gonzalezpazmonica/pm-workspace/compare/v6.3.0...v6.15.0
 [6.3.0]: https://github.com/gonzalezpazmonica/pm-workspace/compare/v6.2.0...v6.3.0
 [6.14.1]: https://github.com/gonzalezpazmonica/pm-workspace/compare/v6.14.0...v6.14.1
